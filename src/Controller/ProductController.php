@@ -72,12 +72,20 @@ class ProductController extends AbstractController
      * @Route("/product", name="update_product", methods={"PUT"})
      */
     public function update(Request $resquest)
-    {
+    {   
+
+        
 
         $date = new \DateTime('@'.strtotime('now'));
         $date->format('Y-m-d H:i:s');
 
         $productData = $resquest->request->all();
+
+        $doctrine = $this->getDoctrine();
+
+        $product = $doctrine->getRepository(Product::class)->find($productId);
+        
+        $doctrine = $this->getDoctrine()->getManager();
 
         $product = new Product();
         $product->setName($productData['name']);
