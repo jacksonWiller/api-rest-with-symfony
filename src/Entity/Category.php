@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ProductRepository::class)
- * @ORM\Table(name="products")
+ * @ORM\Entity(repositoryClass=CategoryRepository::class)
+ * @ORM\Table(name="categories")
  */
-class Product
+class Category
 {
     /**
      * @ORM\Id
@@ -31,29 +31,14 @@ class Product
     private $description;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $content;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $price;
-
-    /**
      * @ORM\Column(type="string", length=255)
      */
     private $slug;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isActive;
-
-    /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private $ceatedAt;
 
     /**
      * @ORM\Column(type="datetime")
@@ -61,13 +46,13 @@ class Product
     private $updatedAt;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Category::class, inversedBy="products")
+     * @ORM\ManyToMany(targetEntity=Product::class, mappedBy="categories")
      */
-    private $categories;
+    private $products;
 
     public function __construct()
     {
-        $this->categories = new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -99,30 +84,6 @@ class Product
         return $this;
     }
 
-    public function getContent(): ?int
-    {
-        return $this->content;
-    }
-
-    public function setContent(int $content): self
-    {
-        $this->content = $content;
-
-        return $this;
-    }
-
-    public function getPrice(): ?int
-    {
-        return $this->price;
-    }
-
-    public function setPrice(int $price): self
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
     public function getSlug(): ?string
     {
         return $this->slug;
@@ -135,26 +96,14 @@ class Product
         return $this;
     }
 
-    public function getIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->createdAt;
+        return $this->ceatedAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $ceatedAt): self
     {
-        $this->createdAt = $createdAt;
+        $this->ceatedAt = $ceatedAt;
 
         return $this;
     }
@@ -172,25 +121,28 @@ class Product
     }
 
     /**
-     * @return Collection|Category[]
+     * @return Collection|Product[]
      */
-    public function getCategories(): Collection
+    public function getProducts(): Collection
     {
-        return $this->categories;
+        return $this->products;
     }
 
-    public function addCategory(Category $category): self
+    public function addProduct(Product $product): self
     {
-        if (!$this->categories->contains($category)) {
-            $this->categories[] = $category;
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+            $product->addCategory($this);
         }
 
         return $this;
     }
 
-    public function removeCategory(Category $category): self
+    public function removeProduct(Product $product): self
     {
-        $this->categories->removeElement($category);
+        if ($this->products->removeElement($product)) {
+            $product->removeCategory($this);
+        }
 
         return $this;
     }
